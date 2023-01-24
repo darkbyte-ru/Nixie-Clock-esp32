@@ -52,7 +52,7 @@ void setup()
   rgbLed(PWM_MAX, 0, 0); //RED backlight indicate initial step
 
   //Nixie registers
-  pinMode(REG_OUTPUT, OUTPUT);//high?
+  pinMode(REG_OUTPUT, OUTPUT);//only one register connected
   pinMode(REG_DATA, OUTPUT); 
   pinMode(REG_SHIFT, OUTPUT);
   pinMode(REG_LATCH, OUTPUT);
