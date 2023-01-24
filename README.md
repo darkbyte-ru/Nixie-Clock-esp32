@@ -1,6 +1,8 @@
 # Idea
 
-Original Nixie Clock KIT board contain STM8S (STM8S003F3) MCU, HC595 (SNx4HC595) shift registers, ULN2003 darlington drivers, DS3231 RTC with battery and plexiglass front-back covers. Also there are two buttons for setting the time and change some settings, which are resets after power cycle. First thought to keep an MCU and add external GPS/WiFi module to be able to sync time. But then I thought that I could simplify the task a little and completely replace MCU with an ESP32. S2 mini board perfectly fit for size and mounting holes. So a soldered out STM8 MCU and connect ESP32 board using lacquered copper wires.
+Original Nixie Clock KIT board contain STM8S (STM8S003F3) MCU, 74HC595 (SNx4HC595) shift registers, ULN2003 darlington drivers, DS3231 RTC with battery and plexiglass front-back covers. Also there are two buttons for setting the time and change some settings, which are resets after power cycle. 
+
+First thought to keep an MCU and add external GPS/WiFi module to be able to sync time. But then I thought that I could simplify the task a little and completely replace MCU with an ESP32. S2 mini board perfectly fit for size and mounting holes. So a soldered out STM8 MCU and connect ESP32 board using lacquered copper wires.
 
 # In-the-box picture
 
@@ -25,6 +27,8 @@ I connected the most inputs to the one side of esp32 board and only KEYs wires g
 For test purpose I also connected 5V bus from ESP32 with 5V input of nixie board. Without that tube did not powered up when the only esp board powered.
 
 To extend lamp life and save some electricity there is also RCWL-0516 microwave motion sensor added (connected to SWIM pin and powered from 5V bus). By default it swift-off the tubes after 30 seconds of inactivity.
+
+By default DOTs driven via separate transistor, but HC595 registers has left couple unused outputs, so thats possible to connect them there.
 
 Insides looks a bit [ugly](https://github.com/darkbyte-ru/Nixie-Clock-esp32/blob/main/Image/heart-transplant.jpg), but who will see it? 🤷
 
