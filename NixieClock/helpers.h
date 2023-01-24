@@ -76,6 +76,13 @@ void rgbFade()
   ledcWrite(3, RGB_A[2]);
 }
 
+void NixieRandom()
+{
+  for(int i=2; i<14; i++){
+    NixieDisplay(random(10), random(10), random(10), random(10));
+    delayt(80);
+  }  
+}
 
 void NixieScroll(bool toleft)
 {
@@ -96,6 +103,7 @@ void NixieFadeIn()
 {
   memset(nixieDisplayArray, 0, TOTALPOINTS); 
 
+  //Turn on couple of segments simultaneously
   for(int i=2; i<14; i++){
     nixieDisplayArray[nixie1[fadeArr[i-2]]] = 0;
     nixieDisplayArray[nixie2[fadeArr[i-2]]] = 0;
@@ -187,6 +195,7 @@ void updateRTC()
 {
   if(!timeClient.forceUpdate()){
     Serial.println("NTP server unavailable");
+    //TODO: fetch NTP server from DHCP, try that instead
 
     timer.in(30000, [](void*) -> bool { 
       updateRTC();

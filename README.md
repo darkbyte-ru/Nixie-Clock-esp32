@@ -36,10 +36,11 @@ Currently Wi-Fi connection required to startup (but having RTC onboard with back
 
 After connecting to wireless network clocks will try to sync time with default NTP server (pool.ntp.org). While that backlight color changes to BLUE. If NTP server accessable - new time writes to RTC. If timeout occur - this step skipped for now and will be retried after 30 seconds.
 
-Regardless of the previous step result clock will request current time from RTC every minute and output that via nixie tubes. To prevent nixie poisoning before each update there will be scroll through all nixie elements.
+Regardless of the previous step result clock will request current time from RTC every minute and output that via nixie tubes. To prevent nixie poisoning before each update there will be scroll through all nixie segments.
 
 # TODO
 
 - Some functional logic for buttons (backlight color change?)
 - Failback access point to be able so setup WiFI creds
 - Make Wi-Fi connection optional and in the background if RTC running
+- Use NTP server from DHCP advertisement instead of default if failed

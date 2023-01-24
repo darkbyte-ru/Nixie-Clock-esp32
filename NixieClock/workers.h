@@ -16,7 +16,7 @@ bool clockTick(void *)
   timer.in(60000 - second*1000, clockTick);
 
   //funny poisoning protection
-  switch(random(3)){
+  switch(random(4)){
     case 0:
       NixieScroll(SCROLL_LEFT);
       break;
@@ -25,6 +25,9 @@ bool clockTick(void *)
       break;
     case 2:
       NixieFadeIn();
+      break;
+    case 3:
+      NixieRandom();
       break;
   }
 
