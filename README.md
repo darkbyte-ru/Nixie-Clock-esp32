@@ -24,7 +24,7 @@ I connected the most inputs to the one side of esp32 board and only KEYs wires g
 
 For test purpose I also connected 5V bus from ESP32 with 5V input of nixie board. Without that tube did not powered up when the only esp board powered.
 
-To extend lamp life and save some electricity there is also RCWL-0516 microwave motion sensor added. By default it swift-off the tubes after 30 seconds of inactivity.
+To extend lamp life and save some electricity there is also RCWL-0516 microwave motion sensor added (connected to SWIM pin and powered from 5V bus). By default it swift-off the tubes after 30 seconds of inactivity.
 
 Insides looks a bit [ugly](https://github.com/darkbyte-ru/Nixie-Clock-esp32/blob/main/Image/heart-transplant.jpg), but who will see it? 🤷
 
