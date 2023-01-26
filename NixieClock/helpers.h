@@ -157,12 +157,12 @@ void ShiftOutData()
 {
   // Ground EN pin and hold low for as long as you are transmitting
   digitalWrite(REG_LATCH, 0);
-  
+
   // Clear everything out just in case to
   // prepare shift register for bit shifting
   digitalWrite(REG_DATA, 0);
   digitalWrite(REG_SHIFT, 0);
- 
+
   // Send data to the nixie drivers 
   for (int i = TOTALPOINTS-1; i >= 0; i--)
   {    
@@ -178,7 +178,7 @@ void ShiftOutData()
     // Set low the data pin after shift to prevent bleed through
     digitalWrite(REG_SHIFT, 0);
   }   
-  
+
   // Return the EN pin high to signal chip that it 
   // no longer needs to listen for data
   digitalWrite(REG_LATCH, 1);

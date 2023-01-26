@@ -30,13 +30,18 @@ void IRAM_ATTR ISR_KEY_DOWN() {
   keyDownPressed++;
 }
 
+TaskHandle_t hOTATask;
+TaskHandle_t hButtonsTask;
+TaskHandle_t hDotsTask;
+
 void setup() 
 {
   Serial.begin(115200);
   Serial.println("setup()");
   randomSeed(analogRead(0));
 
-  pinMode(NIX_DOT, OUTPUT);
+  xTaskCreate(DotsTask, "DotsTask", 10000, NULL, 1, &hDotsTask);
+  
   nixieTubesOn = true;
 
   //RGB led attach
@@ -52,7 +57,7 @@ void setup()
   rgbLed(PWM_MAX, 0, 0); //RED backlight indicate initial step
 
   //Nixie registers
-  pinMode(REG_OUTPUT, OUTPUT);//only one register connected
+  pinMode(REG_OUTPUT, OUTPUT);//only one register connected there
   pinMode(REG_DATA, OUTPUT); 
   pinMode(REG_SHIFT, OUTPUT);
   pinMode(REG_LATCH, OUTPUT);
@@ -88,51 +93,7 @@ void setup()
   //10 disables all nixie outputs
   NixieDisplay(10, 10, 10, 10);
 
-  Serial.println("ArduinoOTA");
-  ArduinoOTA
-    .onStart([]() {
-      String type;
-      if (ArduinoOTA.getCommand() == U_FLASH)
-        type = "sketch";
-      else // U_SPIFFS
-        type = "filesystem";
-
-      // NOTE: if updating SPIFFS this would be the place to unmount SPIFFS using SPIFFS.end()
-      Serial.println("Start updating " + type);
-    })
-    .onEnd([]() {
-      Serial.println("\nEnd");
-      NixieDisplay(10, 10, 10, 10);
-    })
-    .onProgress([](unsigned int progress, unsigned int total) {
-      byte percent = (progress / (total / 100));
-      Serial.printf("Progress: %u%%\r", percent);
-      NixieDisplay(10, 10, percent/10%10, percent%10);
-      digitalWrite(NIX_DOT, !digitalRead(NIX_DOT));
-    })
-    .onError([](ota_error_t error) {
-      Serial.printf("Error[%u]: ", error);
-      switch(error){
-        case OTA_AUTH_ERROR: 
-          Serial.println("Auth Failed");
-          break;
-        case OTA_BEGIN_ERROR:
-          Serial.println("Begin Failed");
-          break;
-        case OTA_CONNECT_ERROR:
-          Serial.println("Connect Failed");
-          break;
-        case OTA_RECEIVE_ERROR:
-          Serial.println("Receive Failed");
-          break;
-        case OTA_END_ERROR:
-          Serial.println("End Failed");
-          break;
-      }
-      rgbLed(PWM_MAX, 0, 0);
-    });
-
-  ArduinoOTA.begin();
+  xTaskCreate(OTATask, "OTATask", 10000, NULL, 5, &hOTATask);
 
   rgbLed(0, 0, PWM_MAX); //BLUE backlight - init almost done
 
@@ -146,11 +107,6 @@ void setup()
   timer.every(motionCheckPer, motionCheck);
   timer.in(250, clockTick);
 
-  timer.every(DOTS_INTERVAL, [](void*) -> bool { 
-    digitalWrite(NIX_DOT, !digitalRead(NIX_DOT));
-    return true; 
-  });
-  
 /*
  * backlight random color change
   rgbFadeInit();
@@ -160,24 +116,10 @@ void setup()
   });
 */
 
+  xTaskCreate(ButtonsTask, "ButtonsTask", 10000, NULL, 100, &hButtonsTask);
 }
 
 void loop() 
 {
-  //buttons handlers
-  //TODO: change backlight color? 
-  if(keyUpPressed){
-    Serial.print("Key UP pressed ");
-    Serial.println(keyUpPressed);
-    keyUpPressed = 0;
-  }
-
-  if(keyDownPressed){
-    Serial.print("Key DOWN pressed ");
-    Serial.println(keyDownPressed);
-    keyDownPressed = 0;
-  }
-
   timer.tick(); 
-  ArduinoOTA.handle();
 }
