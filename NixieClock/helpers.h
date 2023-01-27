@@ -5,6 +5,8 @@
 #define SCROLL_RIGHT 0
 #define SCROLL_LEFT 1
 
+#define delayt vTaskDelay
+
 //for RGB fade animation
 float RGB_A[3];
 float RGB_B[3];
@@ -15,6 +17,7 @@ float RGB_B[3];
 
 bool nixieTubesOn = false;
 byte ledsBrightness = 0;
+bool RTCSynced = false;
 
 byte mByte[0x07]; // holds the array from the DS3231 register
 byte tByte[0x07]; // holds the array from the NTP server
@@ -36,16 +39,16 @@ byte nixie4[]={  0,  1,  2,  3,  4,  5,  6,  7,  8,  9, OOBIDX };
 //Order of nixie tube inner layers 
 byte fadeArr[] = {10, 10, 1, 6, 2, 7, 5, 0, 4, 9, 8, 3, 10, 10};
 
+TaskHandle_t hOTATask;
+TaskHandle_t hButtonsTask;
+TaskHandle_t hDotsTask;
+TaskHandle_t hClockTask;
+TaskHandle_t hMotionSensTask;
+TaskHandle_t hBacklightTask;
+TaskHandle_t hBacklightColorTask;
 
 void NixieDisplay(byte digit1, byte digit2, byte digit3, byte digit4);
 void ShiftOutData();
-
-
-void delayt(unsigned long ms)
-{
-  //timer.tick(); segfault
-  delay(ms);
-}
 
 void rgbFadeInit()
 {
@@ -196,14 +199,9 @@ void updateRTC()
   if(!timeClient.forceUpdate()){
     Serial.println("NTP server unavailable");
     //TODO: fetch NTP server from DHCP, try that instead
-
-    timer.in(30000, [](void*) -> bool { 
-      updateRTC();
-      return false; 
-    });
-    
     return;
   }
+  RTCSynced = true;
   
   unsigned long epochTime = timeClient.getEpochTime();
   tByte[0] = (int)timeClient.getSeconds();
@@ -231,6 +229,10 @@ void updateRTC()
 
 bool getRTCdatetime()
 {
+  if(!RTCSynced){
+    updateRTC();
+  }
+  
   Wire.beginTransmission(DS3231_ADDRESS);
   // Set device to start read reg 0
   Wire.write(0x00);

@@ -34,7 +34,7 @@ Insides looks a bit [ugly](https://github.com/darkbyte-ru/Nixie-Clock-esp32/blob
 
 # Software
 
-To nicely arrange worker threads I used an [arduino-timer](https://github.com/contrem/arduino-timer) library. Also used [NTPClient](https://github.com/arduino-libraries/NTPClient) and [ArduinoOTA](https://github.com/espressif/arduino-esp32/tree/master/libraries/ArduinoOTA).
+Library dependencies: [NTPClient](https://github.com/arduino-libraries/NTPClient) and [ArduinoOTA](https://github.com/espressif/arduino-esp32/tree/master/libraries/ArduinoOTA).
 
 Currently Wi-Fi connection required to startup (but having RTC onboard with backup battery allows to skip this step in feature), so make sure to supply correct Wi-Fi creds in the config.h. While connecting backlight color will be **RED** and timer countdown from 10. If no connection happens - esp reboots. 
 

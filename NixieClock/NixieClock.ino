@@ -10,9 +10,6 @@
 WiFiUDP ntpUDP;
 NTPClient timeClient(ntpUDP);
 
-#include <arduino-timer.h> 
-auto timer = timer_create_default();
-
 byte keyUpPressed = 0;
 byte keyDownPressed = 0;
 byte motionSensorTriggered = 0;
@@ -29,10 +26,6 @@ void IRAM_ATTR ISR_KEY_UP() {
 void IRAM_ATTR ISR_KEY_DOWN() {
   keyDownPressed++;
 }
-
-TaskHandle_t hOTATask;
-TaskHandle_t hButtonsTask;
-TaskHandle_t hDotsTask;
 
 void setup() 
 {
@@ -103,23 +96,25 @@ void setup()
   timeClient.setTimeOffset(TIMEZONE_OFFSET);
   updateRTC();
 
-  timer.every(backlightStepPer, backlightLeds);
-  timer.every(motionCheckPer, motionCheck);
-  timer.in(250, clockTick);
+  xTaskCreate(ButtonsTask, "ButtonsTask", 10000, NULL, 100, &hButtonsTask);
+  xTaskCreate(ClockTask, "ClockTask", 10000, NULL, 10, &hClockTask);
+
+  xTaskCreate(MotionSensTask, "MotionSensTask", 10000, NULL, 100, &hMotionSensTask);
+  xTaskCreate(BacklightTask, "BacklightTask", 10000, NULL, 100, &hBacklightTask);
 
 /*
- * backlight random color change
-  rgbFadeInit();
-  timer.every(50, [](void*) -> bool { 
-    rgbFade();
-    return true; 
-  });
+  xTaskCreate([](void*) -> void { 
+    for(;;){
+      rgbFade();
+      vTaskDelay(30);
+    }
+  }, "BacklightColor", 10000, NULL, 100, &hBacklightColorTask);
 */
-
-  xTaskCreate(ButtonsTask, "ButtonsTask", 10000, NULL, 100, &hButtonsTask);
+  
 }
 
 void loop() 
 {
-  timer.tick(); 
+  //delete built-in task 
+  vTaskDelete(nullptr);
 }
